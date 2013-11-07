@@ -39,13 +39,20 @@
 					<dl>
 						<dt>useful.gestures</dt>
 						<dd>
-							<div id="gestures-test">Click and drag, pinch, swipe or touch across this box.</div>
+							<div id="gestures-test">Click and drag, pinch, swipe or touch across this box.<span>obstacle</span></div>
 							<script>
 							//<!--
-								var gesturesTest = useful.Gestures( document.getElementById('gestures-test'), {
-									'onswipe' : function (x, y, horizontal, vertical, event) {},
-									'ondrag' : function (x, y, horizontal, vertical, event) {},
-									'onpinch' : function (x, y, horizontal, vertical, event) {}
+								var gesturesTest = new useful.Gestures( document.getElementById('gestures-test'), {
+									'threshold' : 50,
+									'increment' : 0.1,
+									'cancel' : true,
+									'swipeLeft' : function (x, y, distance, event) { console.log('swipe left', distance); },
+									'swipeUp' : function (x, y, distance, event) { console.log('swipe up', distance); },
+									'swipeRight' : function (x, y, distance, event) { console.log('swipe right', distance); },
+									'swipeDown' : function (x, y, distance, event) { console.log('swipe down', distance); },
+									'drag' : function (x, y, horizontal, vertical, event) { console.log('drag', x, y, horizontal, vertical); },
+									'pinch' : function (x, y, scale, event) { console.log('pinch', scale); },
+									'twist' : function (x, y, rotation, event) { console.log('twist', rotation); }
 								});
 								gesturesTest.start();
 							//-->

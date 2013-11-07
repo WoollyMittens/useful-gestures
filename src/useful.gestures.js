@@ -16,265 +16,285 @@
 		// properties
 		this.obj = obj;
 		this.cfg = cfg;
+		this.touchOrigin = null;
+		this.touchProgression = null;
+		this.gestureOrigin = null;
+		this.gestureProgression = null;
+		this.cancel = null;
 		// methods
 		this.start = function () {
-
+			// check the configuration properties
+			this.checkConfig(this.cfg);
+			// set up a function to optionally cancel the interactions
+			this.cancel = (this.cfg.cancel) ? function (event) { event = event || window.event; event.preventDefault(); } : function () {};
+			// set the required events for mouse
+			this.obj.addEventListener('mousedown', this.onStartTouch());
+			this.obj.addEventListener('mousemove', this.onChangeTouch());
+			document.body.addEventListener('mouseup', this.onEndTouch());
+			this.obj.addEventListener('mousewheel', this.onChangeWheel());
+			if (navigator.userAgent.match(/firefox/gi)) { this.obj.addEventListener('DOMMouseScroll', this.onChangeWheel()); }
+			// set the required events for touch
+			this.obj.addEventListener('touchstart', this.onStartTouch());
+			this.obj.addEventListener('touchmove', this.onChangeTouch());
+			document.body.addEventListener('touchend', this.onEndTouch());
+			this.obj.addEventListener('mspointerdown', this.onStartTouch());
+			this.obj.addEventListener('mspointermove', this.onChangeTouch());
+			document.body.addEventListener('mspointerup', this.onEndTouch());
+			// set the required events for gestures
+			this.obj.addEventListener('gesturestart', this.onStartGesture());
+			this.obj.addEventListener('gesturechange', this.onChangeGesture());
+			this.obj.addEventListener('gestureend', this.onEndGesture());
+			this.obj.addEventListener('msgesturestart', this.onStartGesture());
+			this.obj.addEventListener('msgesturechange', this.onChangeGesture());
+			this.obj.addEventListener('msgestureend', this.onEndGesture());
 		};
-		// events
-	};
-
-
-
-
-
-	// private functions
-	var interactions = interactions || {};
-
-	// general interactions
-	interactions.watch = function (element, handlers, coordinates) {
-		// if touch is supported
-		if (!!('ontouchstart' in window) || !!('onmsgesturechange' in window)) {
-			// use touch
-			interactions.touch(element, handlers, coordinates);
-		} else {
-			// fall back on mouse
-			interactions.mouse(element, handlers, coordinates);
-		}
-		// if gestures are supported
-		if (!!('ongesturestart' in window) || !!('onmsgesturestart' in window)) {
-			// use gestures
-			interactions.gestures(element, handlers, coordinates);
-		}
-	};
-
-	// mouse interactions
-	interactions.mouse = function (element, handlers, coordinates) {
-		var wheel, start, move, end;
-
-		// default handlers
-		handlers = handlers || {};
-		handlers.wheel = handlers.wheel || function () {};
-		handlers.start = handlers.start || function () {};
-		handlers.move = handlers.move || function () {};
-		handlers.end = handlers.end || function () {};
-
-		// default coordinates
-		coordinates = coordinates || {};
-
-		// handle the mouse wheel movement
-		wheel = function (event) {
-			// get the reading from the mouse wheel
-			coordinates.wheel = {
-				y : ((window.event) ? window.event.wheelDelta / 120 : -event.detail / 3)
-			};
-			// THINGS TO DO WHEN SCROLLED
-			handlers.wheel(coordinates, event);
+		this.checkConfig = function (config) {
+			// add default values for missing ones
+			config.threshold = config.threshold || 50;
+			config.increment = config.increment || 0.1;
+			config.cancel = config.cancel || true;
+			// add dummy event handlers for missing ones
+			config.swipeUp = config.swipeUp || function () {};
+			config.swipeLeft = config.swipeLeft || function () {};
+			config.swipeRight = config.swipeRight || function () {};
+			config.swipeDown = config.swipeDown || function () {};
+			config.drag = config.drag || function () {};
+			config.pinch = config.pinch || function () {};
+			config.twist = config.twist || function () {};
 		};
-		element.addEventListener('mousewheel', wheel);
-		if (navigator.userAgent.match(/firefox/gi)) { element.addEventListener('DOMMouseScroll', wheel, false); }
-
-		// handle the start of the mouse movement
-		start = function (event) {
-			// get the event properties
-			event = event || window.event;
-			// reset the positions
-			coordinates[0] = {};
-			// store the start positions
-			coordinates[0].start = {
-				x : (event.pageX || event.x),
-				y : (event.pageY || event.y)
-			};
-			// THINGS TO DO WHEN MOUSE DOWN
-			handlers.start(coordinates, event);
-		};
-		element.addEventListener('mousedown', start);
-
-		// handle the duration of the mouse movement
-		move = function (event) {
-			// get the event properties
-			event = event || window.event;
-			// if there is a touch in progress
-			if (coordinates[0] && coordinates[0].start) {
-				// store the duration positions
-				coordinates[0].move = {
-					x : (event.pageX || event.x),
-					y : (event.pageY || event.y)
-				};
-				// THINGS TO DO WHEN DRAGGED
-				handlers.move(coordinates, event);
-			}
-		};
-		document.addEventListener('mousemove', move);
-
-		// handle the end of the mouse movement
-		end = function (event) {
-			// get the event properties
-			event = event || window.event;
-			// store the end position
-			if (coordinates[0]) {
-				coordinates[0].end = {
-					x : (event.pageX || event.x),
-					y : (event.pageY || event.y)
-				};
-			}
-			// THINGS TO DO WHEN MOUSE UP
-			handlers.end(coordinates, event);
-			// clear the positions
-			coordinates = {};
-		};
-		document.addEventListener('mouseup', end);
-	};
-
-	// touch interactions
-	interactions.touch = function (element, handlers, coordinates) {
-		var start, move, end;
-
-		// default handlers
-		handlers = handlers || {};
-		handlers.start = handlers.start || function () {};
-		handlers.move = handlers.move || function () {};
-		handlers.end = handlers.end || function () {};
-
-		// default coordinates
-		coordinates = coordinates || {};
-
-		// handle the start of the touch
-		start = function (event) {
-			var a, b, touches, id;
-			// for all touches
-			touches = event.touches || [event];
-			for (a = 0, b = touches.length; a < b; a += 1) {
-				// get a reference id for the event
-				id = event.pointerId || a;
-				// reset the positions
-				coordinates[id] = {};
-				// store the start positions
-				coordinates[id].start = {
-					x : touches[a].pageX,
-					y : touches[a].pageY
-				};
-			}
-			// THINGS TO DO WHEN TOUCHED
-			handlers.start(coordinates, event);
-		};
-		element.addEventListener('touchstart', start);
-		element.addEventListener('mspointerdown', start);
-
-		// handle the duration of the touch
-		move = function (event) {
-			var a, b, touches, id, hasStarted = false;
-			// for all touches
-			touches = event.touches || [event];
-			for (a = 0, b = touches.length; a < b; a += 1) {
-				// get a reference id for the event
-				id = event.pointerId || a;
-				// if there is a touch in progress
-				if (coordinates[id] && coordinates[id].start) {
-					// report motion
-					hasStarted = true;
-					// store the move positions
-					coordinates[id].move = {
-						x : touches[a].pageX,
-						y : touches[a].pageY
-					};
+		this.correctOffset = function (element) {
+			var offsetX = 0, offsetY = 0;
+			// if there is an offset
+			if (element.offsetParent) {
+				// follow the offsets back to the right parent element
+				while (element !== this.obj) {
+					offsetX += element.offsetLeft;
+					offsetY += element.offsetTop;
+					element = element.offsetParent;
 				}
 			}
-			// THINGS TO DO WHEN MOVED
-			if(hasStarted) { handlers.move(coordinates, event); }
+			// return the offsets
+			return { 'x' : offsetX, 'y' : offsetY };
 		};
-		element.addEventListener('touchmove', move);
-		element.addEventListener('mspointermove', move);
-
-		// handle the end of the touch
-		end = function (event) {
-			var touches, a, b, id;
-			// for all touches
-			touches = event.touches || [event];
-			for (a = 0, b = touches.length; a < b; a += 1) {
-				// get a reference id for the event
-				id = event.pointerId || a;
-				// if there is a touch in progress
-				if (coordinates[id] && coordinates[id].start) {
-					// store the end positions
-					coordinates[id].end = {
-						x : touches[a].pageX,
-						y : touches[a].pageY
-					};
+		this.startTouch = function (event) {
+			// get the offset if the target shifts
+			var offsets = this.correctOffset(event.target || event.srcElement);
+			// note the start position
+			this.touchOrigin = {
+				'x' : event.x || event.layerX + offsets.x,
+				'y' : event.y || event.layerY + offsets.y
+			};
+			this.touchProgression = {
+				'x' : this.touchOrigin.x,
+				'y' : this.touchOrigin.y
+			};
+		};
+		this.changeTouch = function (event) {
+			// if there is an origin
+			if (this.touchOrigin) {
+				// get the offset if the target shifts
+				var offsets = this.correctOffset(event.target || event.srcElement),
+					x = event.x || event.layerX + offsets.x,
+					y = event.y || event.layerY + offsets.y;
+				// get the gesture parameters
+				this.cfg.drag(
+					this.touchOrigin.x,
+					this.touchOrigin.y,
+					x - this.touchProgression.x,
+					y - this.touchProgression.y,
+					event
+				);
+				// update the current position
+				this.touchProgression = {
+					'x' : x,
+					'y' : y
+				};
+			}
+		};
+		this.endTouch = function (event) {
+			// if the numbers are valid
+			if (this.touchOrigin && this.touchProgression) {
+				// calculate the motion
+				var distance = {
+					'x' : this.touchProgression.x - this.touchOrigin.x,
+					'y' : this.touchProgression.y - this.touchOrigin.y
+				};
+				// if the horizontal motion was the largest
+				if (Math.abs(distance.x) > Math.abs(distance.y)) {
+					// if there was a right swipe
+					if (distance.x > this.cfg.threshold) {
+						// report the associated swipe
+						this.cfg.swipeRight(this.touchOrigin.x, this.touchOrigin.y, distance.x, event);
+					// else if there was a left swipe
+					} else if (distance.x < -this.cfg.threshold) {
+						// report the associated swipe
+						this.cfg.swipeLeft(this.touchOrigin.x, this.touchOrigin.y, -distance.x, event);
+					}
+				// else
+				} else {
+					// if there was a down swipe
+					if (distance.y > this.cfg.threshold) {
+						// report the associated swipe
+						this.cfg.swipeDown(this.touchOrigin.x, this.touchOrigin.y, distance.y, event);
+					// else if there was an up swipe
+					} else if (distance.y < -this.cfg.threshold) {
+						// report the associated swipe
+						this.cfg.swipeUp(this.touchOrigin.x, this.touchOrigin.y, -distance.y, event);
+					}
 				}
 			}
-			// THINGS TO DO WHEN RELEASED
-			handlers.end(coordinates, event);
-			// clear the positions afterwards
-			coordinates = {};
+			// clear the input
+			this.touchProgression = null;
+			this.touchOrigin = null;
 		};
-		element.addEventListener('touchend', end);
-		element.addEventListener('mspointerup', end);
-
-	};
-
-	// gesture interactions
-	interactions.gestures = function (element, handlers, coordinates) {
-		var start, move, end;
-
-		// default handlers
-		handlers = handlers || {};
-		handlers.start = handlers.start || function () {};
-		handlers.move = handlers.move || function () {};
-		handlers.end = handlers.end || function () {};
-
-		// default coordinates
-		coordinates = coordinates || {};
-
-		// handle the start of the gesture
-		start = function (event) {
-			// reset the positions
-			coordinates[0] = {};
-			// store the start positions
-			coordinates[0].start = {
-				rotation : event.rotation,
-				scale : event.scale
+		this.changeWheel = function (event) {
+			// measure the wheel distance
+			var zoom = 1, distance = ((window.event) ? window.event.wheelDelta / 120 : -event.detail / 3);
+			// equate wheeling up / down to zooming in / out
+			zoom = (distance > 0) ? 1 + this.cfg.increment : zoom = 1 - this.cfg.increment;
+			// report the zoom
+			this.cfg.pinch(
+				0,
+				0,
+				zoom,
+				null
+			);
+		};
+		this.startGesture = function (event) {
+			// note the start position
+			this.gestureOrigin = {
+				'scale' : event.scale,
+				'rotation' : event.rotation
 			};
-			// THINGS TO DO WHEN TOUCH DOWN
-			handlers.start(coordinates, event);
+			this.gestureProgression = {
+				'scale' : this.gestureOrigin.scale,
+				'rotation' : this.gestureOrigin.rotation
+			};
 		};
-		element.addEventListener('gesturestart', start);
-		element.addEventListener('msgesturestart', start);
-
-		// handle the duration of the gesture
-		move = function (event) {
-			// if there is a touch in progress
-			if (coordinates[0] && coordinates[0].start) {
-				// store the move positions
-				coordinates[0].move = {
-					rotation : event.rotation,
-					scale : event.scale
+		this.changeGesture = function (event) {
+			// if there is an origin
+			if (this.gestureOrigin) {
+				// get the distances from the event
+				var scale = event.scale,
+					rotation = event.rotation;
+				// get the gesture parameters
+				this.cfg.pinch(
+					event.layerX,
+					event.layerY,
+					scale - this.gestureProgression.scale,
+					event
+				);
+				this.cfg.twist(
+					event.layerX,
+					event.layerY,
+					rotation - this.gestureProgression.rotation,
+					event
+				);
+				// update the current position
+				this.gestureProgression = {
+					'scale' : event.scale,
+					'rotation' : event.rotation
 				};
-				// THINGS TO DO WHEN SWIPED
-				handlers.move(coordinates, event);
 			}
 		};
-		element.addEventListener('gesturechange', move);
-		element.addEventListener('msgesturechange', move);
-
-		// handle the end of the gesture
-		end = function (event) {
-			// store the end positions
-			coordinates[0].end = {
-				rotation : event.rotation,
-				scale : event.scale
-			};
-			// THINGS TO DO WHEN TOUCH UP
-			handlers.end(coordinates, event);
-			// clear the positions afterwards
-			coordinates = {};
+		this.endGesture = function () {
+			// note the start position
+			this.gestureOrigin = null;
 		};
-		element.addEventListener('gestureend', move);
-		element.addEventListener('msgestureend', move);
-
+		// touch events
+		this.onStartTouch = function () {
+			// store the context
+			var context = this;
+			// return and event handler
+			return function (event) {
+				// get event object
+				event = event || window.event;
+				// optionally cancel the default behaviour
+				context.cancel(event);
+				// handle the event
+				context.startTouch(event);
+			};
+		};
+		this.onChangeTouch = function () {
+			// store the context
+			var context = this;
+			// return and event handler
+			return function (event) {
+				// get event object
+				event = event || window.event;
+				// optionally cancel the default behaviour
+				context.cancel(event);
+				// handle the event
+				context.changeTouch(event);
+			};
+		};
+		this.onEndTouch = function () {
+			// store the context
+			var context = this;
+			// return and event handler
+			return function (event) {
+				// get event object
+				event = event || window.event;
+				// optionally cancel the default behaviour
+				context.cancel(event);
+				// handle the event
+				context.endTouch(event);
+			};
+		};
+		// mouse wheel events
+		this.onChangeWheel = function () {
+			// store the context
+			var context = this;
+			// return and event handler
+			return function (event) {
+				// get event object
+				event = event || window.event;
+				// optionally cancel the default behaviour
+				context.cancel(event);
+				// handle the event
+				context.changeWheel(event);
+			};
+		};
+		// gesture events
+		this.onStartGesture = function () {
+			// store the context
+			var context = this;
+			// return and event handler
+			return function (event) {
+				// get event object
+				event = event || window.event;
+				// optionally cancel the default behaviour
+				context.cancel(event);
+				// handle the event
+				context.startGesture(event);
+			};
+		};
+		this.onChangeGesture = function () {
+			// store the context
+			var context = this;
+			// return and event handler
+			return function (event) {
+				// get event object
+				event = event || window.event;
+				// optionally cancel the default behaviour
+				context.cancel(event);
+				// handle the event
+				context.changeGesture(event);
+			};
+		};
+		this.onEndGesture = function () {
+			// store the context
+			var context = this;
+			// return and event handler
+			return function (event) {
+				// get event object
+				event = event || window.event;
+				// optionally cancel the default behaviour
+				context.cancel(event);
+				// handle the event
+				context.endGesture(event);
+			};
+		};
 	};
-
-	// public functions
-	useful.interactions = useful.interactions || {};
-	useful.interactions.watch = interactions.watch;
 
 }(window.useful = window.useful || {}));

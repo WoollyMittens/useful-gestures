@@ -16,20 +16,41 @@ This include can be added to the header or placed inline before the script is in
 
 ```javascript
 var gesturesTest = useful.Gestures( document.getElementById('gestures-test'), {
-	'onswipe' : function (x, y, horizontal, vertical, event) {},
-	'ondrag' : function (x, y, horizontal, vertical, event) {},
-	'onpinch' : function (x, y, horizontal, vertical, event) {}
+	'threshold' : 50,
+	'increment' : 0.1,
+	'cancel' : true,
+	'swipeLeft' : function (x, y, distance, event) {},
+	'swipeUp' : function (x, y, distance, event) {},
+	'swipeRight' : function (x, y, distance, event) {},
+	'swipeDown' : function (x, y, distance, event) {},
+	'drag' : function (x, y, horizontal, vertical, event) {},
+	'pinch' : function (x, y, scale, event) {},
+	'twist' : function (x, y, rotation, event) {}
 });
 gesturesTest.start();
 ```
 
 This function tries to unify mouse and touch interaction across desktop, Android, iOS and Windows 8.
 
-**onswipe : {function}** - A function that runs every time a swipe is performed.
+**threshold : {integer}** - Gestures shorter than this are ignored.
 
-**ondrag : {function}** - A function that runs every time a dragging motion is in progress.
+**increments : {float}** - Zoom factor increments applied to the mouse wheel.
 
-**onpinch : {function}** - A function that runs every time a pinching motion is in progress.
+**cancel : {boolean}** - Cancels the default browser behaviour for the interaction.
+
+**swipeLeft : {function}** - A function that runs every time a swipe to the left is performed.
+
+**swipeUp : {function}** - A function that runs every time a swipe up is performed.
+
+**swipeRight : {function}** - A function that runs every time a swipe to the right is performed.
+
+**swipeDown : {function}** - A function that runs every time a swipe down is performed.
+
+**drag : {function}** - A function that runs every time a dragging motion is in progress.
+
+**pinch : {function}** - A function that runs every time a pinching motion is in progress.
+
+**twist : {function}** - A function that runs every time a twisting motion is in progress.
 
 **x : {integer}** - The x coordinate of the start or centre of the interaction.
 
@@ -38,6 +59,10 @@ This function tries to unify mouse and touch interaction across desktop, Android
 **horizontal : {integer}** - The horizontal component of the gesture.
 
 **vertical : {integer}** - The vertical component of the gesture.
+
+**scale : {float}** - The scaling factor.
+
+**rotation : {float}** - The amount of rotation in degrees.
 
 **event : {event}** - The event that resulted from the interaction.
 

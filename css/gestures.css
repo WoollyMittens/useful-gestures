@@ -19,6 +19,16 @@
     height: 256px;
     margin-bottom: 1em;
     padding: 1em;
+    position: relative;
     width: auto;
+  }
+  #gestures-test span {
+    border: solid 1px Red;
+    position: absolute;
+    height: 25%;
+    left: 25%;
+    padding: 1em;
+    width: 25%;
+    top: 75%;
   }
 }
