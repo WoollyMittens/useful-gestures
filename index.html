@@ -44,8 +44,10 @@
 							//<!--
 								var gesturesTest = new useful.Gestures( document.getElementById('gestures-test'), {
 									'threshold' : 50,
+									'filter' : 1,
 									'increment' : 0.1,
-									'cancel' : true,
+									'cancelTouch' : true,
+									'cancelGesture' : true,
 									'swipeLeft' : function (x, y, distance, event) { console.log('swipe left', distance); },
 									'swipeUp' : function (x, y, distance, event) { console.log('swipe up', distance); },
 									'swipeRight' : function (x, y, distance, event) { console.log('swipe right', distance); },

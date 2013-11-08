@@ -18,7 +18,8 @@ This include can be added to the header or placed inline before the script is in
 var gesturesTest = useful.Gestures( document.getElementById('gestures-test'), {
 	'threshold' : 50,
 	'increment' : 0.1,
-	'cancel' : true,
+	'cancelTouch' : true,
+	'cancelGesture' : true,
 	'swipeLeft' : function (x, y, distance, event) {},
 	'swipeUp' : function (x, y, distance, event) {},
 	'swipeRight' : function (x, y, distance, event) {},
@@ -36,7 +37,9 @@ This function tries to unify mouse and touch interaction across desktop, Android
 
 **increments : {float}** - Zoom factor increments applied to the mouse wheel.
 
-**cancel : {boolean}** - Cancels the default browser behaviour for the interaction.
+**cancelTouch : {boolean}** - Cancels the default browser behaviour for the touch interaction.
+
+**cancelGesture : {boolean}** - Cancels the default browser behaviour for the gesture interaction.
 
 **swipeLeft : {function}** - A function that runs every time a swipe to the left is performed.
 
@@ -65,6 +68,40 @@ This function tries to unify mouse and touch interaction across desktop, Android
 **rotation : {float}** - The amount of rotation in degrees.
 
 **event : {event}** - The event that resulted from the interaction.
+
+## How to control the script
+
+### disableDefaultTouch
+
+```javascript
+gesturesTest.disableDefaultTouch();
+```
+
+Disable the mobile browser's default behaviour to touch. This stop the interference with the event handlers.
+
+### enableDefaultTouch
+
+```javascript
+gesturesTest.enableDefaultTouch();
+```
+
+Enables the mobile browser's default behaviour to touch. This will interfere with the event handlers.
+
+### disableDefaultGesture
+
+```javascript
+gesturesTest.disableDefaultGesture();
+```
+
+Disable the mobile browser's default behaviour to gestures. This stop the interference with the event handlers.
+
+### enableDefaultGesture
+
+```javascript
+gesturesTest.enableDefaultGesture();
+```
+
+Enables the mobile browser's default behaviour to gestures. This will interfere with the event handlers.
 
 ## Prerequisites
 
