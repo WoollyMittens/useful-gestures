@@ -15,18 +15,18 @@ This include can be added to the header or placed inline before the script is in
 ## How to start the script
 
 ```javascript
-var gesturesTest = useful.Gestures( document.getElementById('gestures-test'), {
+var gesturesTest = new useful.Gestures( document.getElementById('gestures-test'), {
 	'threshold' : 50,
 	'increment' : 0.1,
 	'cancelTouch' : true,
 	'cancelGesture' : true,
-	'swipeLeft' : function (x, y, distance, event) {},
-	'swipeUp' : function (x, y, distance, event) {},
-	'swipeRight' : function (x, y, distance, event) {},
-	'swipeDown' : function (x, y, distance, event) {},
-	'drag' : function (x, y, horizontal, vertical, event) {},
-	'pinch' : function (x, y, scale, event) {},
-	'twist' : function (x, y, rotation, event) {}
+	'swipeLeft' : function ({x, y, distance, event, source}) {},
+	'swipeUp' : function ({x, y, distance, event, source}) {},
+	'swipeRight' : function ({x, y, distance, event, source}) {},
+	'swipeDown' : function ({x, y, distance, event, source}) {},
+	'drag' : function ({x, y, horizontal, vertical, event, source}) {},
+	'pinch' : function ({x, y, scale, event, source}) {},
+	'twist' : function ({x, y, rotation, event, source}) {}
 });
 gesturesTest.start();
 ```
@@ -68,6 +68,8 @@ This function tries to unify mouse and touch interaction across desktop, Android
 **rotation : {float}** - The amount of rotation in degrees.
 
 **event : {event}** - The event that resulted from the interaction.
+
+**source : {object}** - The original source element of the interaction.
 
 ## How to control the script
 

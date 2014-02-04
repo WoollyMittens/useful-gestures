@@ -87,7 +87,8 @@
 			// note the start position
 			this.touchOrigin = {
 				'x' : event.x || event.layerX + offsets.x,
-				'y' : event.y || event.layerY + offsets.y
+				'y' : event.y || event.layerY + offsets.y,
+				'target' : event.target || event.srcElement
 			};
 			this.touchProgression = {
 				'x' : this.touchOrigin.x,
@@ -102,13 +103,14 @@
 					x = event.x || event.layerX + offsets.x,
 					y = event.y || event.layerY + offsets.y;
 				// get the gesture parameters
-				this.cfg.drag(
-					this.touchOrigin.x,
-					this.touchOrigin.y,
-					x - this.touchProgression.x,
-					y - this.touchProgression.y,
-					event
-				);
+				this.cfg.drag({
+					'x' : this.touchOrigin.x,
+					'y' : this.touchOrigin.y,
+					'horizontal' : x - this.touchProgression.x,
+					'vertical' : y - this.touchProgression.y,
+					'event' : event,
+					'source' : this.touchOrigin.target
+				});
 				// update the current position
 				this.touchProgression = {
 					'x' : x,
@@ -129,22 +131,22 @@
 					// if there was a right swipe
 					if (distance.x > this.cfg.threshold) {
 						// report the associated swipe
-						this.cfg.swipeRight(this.touchOrigin.x, this.touchOrigin.y, distance.x, event);
+						this.cfg.swipeRight({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : distance.x, 'event' : event, 'source' : this.touchOrigin.target});
 					// else if there was a left swipe
 					} else if (distance.x < -this.cfg.threshold) {
 						// report the associated swipe
-						this.cfg.swipeLeft(this.touchOrigin.x, this.touchOrigin.y, -distance.x, event);
+						this.cfg.swipeLeft({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : -distance.x, 'event' : event, 'source' : this.touchOrigin.target});
 					}
 				// else
 				} else {
 					// if there was a down swipe
 					if (distance.y > this.cfg.threshold) {
 						// report the associated swipe
-						this.cfg.swipeDown(this.touchOrigin.x, this.touchOrigin.y, distance.y, event);
+						this.cfg.swipeDown({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : distance.y, 'event' : event, 'source' : this.touchOrigin.target});
 					// else if there was an up swipe
 					} else if (distance.y < -this.cfg.threshold) {
 						// report the associated swipe
-						this.cfg.swipeUp(this.touchOrigin.x, this.touchOrigin.y, -distance.y, event);
+						this.cfg.swipeUp({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : -distance.y, 'event' : event, 'source' : this.touchOrigin.target});
 					}
 				}
 			}
@@ -154,16 +156,17 @@
 		};
 		this.changeWheel = function (event) {
 			// measure the wheel distance
-			var zoom = 1, distance = ((window.event) ? window.event.wheelDelta / 120 : -event.detail / 3);
+			var scale = 1, distance = ((window.event) ? window.event.wheelDelta / 120 : -event.detail / 3);
 			// equate wheeling up / down to zooming in / out
-			zoom = (distance > 0) ? +this.cfg.increment : zoom = -this.cfg.increment;
+			scale = (distance > 0) ? +this.cfg.increment : scale = -this.cfg.increment;
 			// report the zoom
-			this.cfg.pinch(
-				0,
-				0,
-				zoom,
-				null
-			);
+			this.cfg.pinch({
+				'x' : 0,
+				'y' : 0,
+				'scale' : scale,
+				'event' : event,
+				'source' : event.target || event.srcElement
+			});
 		};
 		this.cancelGesture = function (event) {
 			if (this.cfg.cancelGesture) {
@@ -175,7 +178,8 @@
 			// note the start position
 			this.gestureOrigin = {
 				'scale' : event.scale,
-				'rotation' : event.rotation
+				'rotation' : event.rotation,
+				'target' : event.target || event.srcElement
 			};
 			this.gestureProgression = {
 				'scale' : this.gestureOrigin.scale,
@@ -189,18 +193,20 @@
 				var scale = event.scale,
 					rotation = event.rotation;
 				// get the gesture parameters
-				this.cfg.pinch(
-					event.layerX,
-					event.layerY,
-					scale - this.gestureProgression.scale,
-					event
-				);
-				this.cfg.twist(
-					event.layerX,
-					event.layerY,
-					rotation - this.gestureProgression.rotation,
-					event
-				);
+				this.cfg.pinch({
+					'x' : event.layerX,
+					'y' : event.layerY,
+					'scale' : scale - this.gestureProgression.scale,
+					'event' : event,
+					'target' : this.gestureOrigin.target
+				});
+				this.cfg.twist({
+					'x' : event.layerX,
+					'y' : event.layerY,
+					'rotation' : rotation - this.gestureProgression.rotation,
+					'event' : event,
+					'target' : this.gestureOrigin.target
+				});
 				// update the current position
 				this.gestureProgression = {
 					'scale' : event.scale,
