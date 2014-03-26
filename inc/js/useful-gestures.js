@@ -76,7 +76,8 @@
 
 	// allow console.log
 	polyfills.consoleLog = function () {
-		if (!window.console) {
+		var overrideTest = new RegExp('console-log', 'i');
+		if (!window.console || overrideTest.test(document.body.parentNode.className)) {
 			window.console = {};
 			window.console.log = function () {
 				// if the reporting panel doesn't exist
@@ -107,6 +108,8 @@
 				for (a = 0, b = arguments.length; a < b; a += 1) {
 					messages += arguments[a] + '<br/>';
 				}
+				// add a break after the message
+				messages += '<hr/>';
 				// output the queue to the panel
 				reportPanel.innerHTML = messages + reportString;
 			};
@@ -214,6 +217,12 @@
 			config.pinch = config.pinch || function () {};
 			config.twist = config.twist || function () {};
 		};
+		this.readEvent = function (event, dimension) {
+			switch (dimension) {
+				case 'y' : return event.y || (event.touches && event.touches[0].pageY) || event.pageY || event.layerY + offsets.y;
+				default : return event.x || (event.touches && event.touches[0].pageX) || event.pageX || event.layerX + offsets.x;
+			}
+		};
 		this.correctOffset = function (element) {
 			var offsetX = 0, offsetY = 0;
 			// if there is an offset
@@ -239,8 +248,8 @@
 			var offsets = this.correctOffset(event.target || event.srcElement);
 			// note the start position
 			this.touchOrigin = {
-				'x' : event.x || event.layerX + offsets.x || event.pageX || event.touches[0].pageX,
-				'y' : event.y || event.layerY + offsets.y || event.pageY || event.touches[0].pageY,
+				'x' : this.readEvent(event, 'x'),
+				'y' : this.readEvent(event, 'y'),
 				'target' : event.target || event.srcElement
 			};
 			this.touchProgression = {
@@ -253,8 +262,8 @@
 			if (this.touchOrigin) {
 				// get the offset if the target shifts
 				var offsets = this.correctOffset(event.target || event.srcElement),
-					x = event.x || event.layerX + offsets.x || event.pageX || event.touches[0].pageX,
-					y = event.y || event.layerY + offsets.y || event.pageY || event.touches[0].pageY;
+					x = this.readEvent(event, 'x'),
+					y = this.readEvent(event, 'y');
 				// get the gesture parameters
 				this.cfg.drag({
 					'x' : this.touchOrigin.x,
@@ -347,15 +356,15 @@
 					rotation = event.rotation;
 				// get the gesture parameters
 				this.cfg.pinch({
-					'x' : event.x || event.layerX || event.pageX || event.touches[0].pageX,
-					'y' : event.y || event.layerY || event.pageY || event.touches[0].pageY,
+					'x' : this.readEvent(event, 'x'),
+					'y' : this.readEvent(event, 'y'),
 					'scale' : scale - this.gestureProgression.scale,
 					'event' : event,
 					'target' : this.gestureOrigin.target
 				});
 				this.cfg.twist({
-					'x' : event.x || event.layerX || event.pageX || event.touches[0].pageX,
-					'y' : event.y || event.layerY || event.pageY || event.touches[0].pageY,
+					'x' : this.readEvent(event, 'x'),
+					'y' : this.readEvent(event, 'y'),
 					'rotation' : rotation - this.gestureProgression.rotation,
 					'event' : event,
 					'target' : this.gestureOrigin.target
@@ -379,8 +388,6 @@
 			return function (event) {
 				// get event object
 				event = event || window.event;
-				// optionally cancel the default behaviour
-				context.cancelTouch(event);
 				// handle the event
 				context.startTouch(event);
 				context.changeTouch(event);
@@ -406,8 +413,6 @@
 			return function (event) {
 				// get event object
 				event = event || window.event;
-				// optionally cancel the default behaviour
-				context.cancelTouch(event);
 				// handle the event
 				context.endTouch(event);
 			};
@@ -461,8 +466,6 @@
 			return function (event) {
 				// get event object
 				event = event || window.event;
-				// optionally cancel the default behaviour
-				context.cancelGesture(event);
 				// handle the event
 				context.endGesture(event);
 			};
