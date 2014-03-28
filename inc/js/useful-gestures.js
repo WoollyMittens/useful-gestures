@@ -77,7 +77,7 @@
 	// allow console.log
 	polyfills.consoleLog = function () {
 		var overrideTest = new RegExp('console-log', 'i');
-		if (!window.console || overrideTest.test(document.body.parentNode.className)) {
+		if (!window.console || overrideTest.test(document.querySelectorAll('html')[0].className)) {
 			window.console = {};
 			window.console.log = function () {
 				// if the reporting panel doesn't exist
@@ -200,6 +200,8 @@
 			this.obj.addEventListener('msgesturestart', this.onStartGesture());
 			this.obj.addEventListener('msgesturechange', this.onChangeGesture());
 			this.obj.addEventListener('msgestureend', this.onEndGesture());
+			// disable the start function so it can't be started twice
+			this.start = function () {};
 		};
 		this.checkConfig = function (config) {
 			// add default values for missing ones
@@ -483,6 +485,8 @@
 		this.disableDefaultGesture = function () {
 			this.cfg.cancelGesture = true;
 		};
+		// go
+		this.start();
 	};
 
 }(window.useful = window.useful || {}));

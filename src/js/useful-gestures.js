@@ -44,6 +44,8 @@
 			this.obj.addEventListener('msgesturestart', this.onStartGesture());
 			this.obj.addEventListener('msgesturechange', this.onChangeGesture());
 			this.obj.addEventListener('msgestureend', this.onEndGesture());
+			// disable the start function so it can't be started twice
+			this.start = function () {};
 		};
 		this.checkConfig = function (config) {
 			// add default values for missing ones
@@ -327,6 +329,8 @@
 		this.disableDefaultGesture = function () {
 			this.cfg.cancelGesture = true;
 		};
+		// go
+		this.start();
 	};
 
 }(window.useful = window.useful || {}));

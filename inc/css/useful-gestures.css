@@ -2,18 +2,21 @@
 	Example Styling for Useful Functions
 */
 @media all {
+  /* line 8, ../../src/scss/useful-gestures.scss */
   .useful-tests dt {
     font-weight: bold;
     display: block;
     margin: 0;
     padding: 0;
   }
+  /* line 14, ../../src/scss/useful-gestures.scss */
   .useful-tests dd {
     display: block;
     margin: 0 0 1.3em 0;
     padding: 0;
   }
 
+  /* line 20, ../../src/scss/useful-gestures.scss */
   #gestures-test {
     border: solid 1px #333;
     height: 256px;
@@ -22,6 +25,7 @@
     position: relative;
     width: auto;
   }
+  /* line 27, ../../src/scss/useful-gestures.scss */
   #gestures-test span {
     border: solid 1px Red;
     position: absolute;
