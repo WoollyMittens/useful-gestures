@@ -28,13 +28,14 @@ var gesturesTest = new useful.Gestures( document.getElementById('gestures-test')
 	'increment' : 0.1,
 	'cancelTouch' : true,
 	'cancelGesture' : true,
-	'swipeLeft' : function ({x, y, distance, event, source}) {},
-	'swipeUp' : function ({x, y, distance, event, source}) {},
-	'swipeRight' : function ({x, y, distance, event, source}) {},
-	'swipeDown' : function ({x, y, distance, event, source}) {},
-	'drag' : function ({x, y, horizontal, vertical, event, source}) {},
-	'pinch' : function ({x, y, scale, event, source}) {},
-	'twist' : function ({x, y, rotation, event, source}) {}
+	'swipeLeft' : function (coords) {},
+	'swipeUp' : function (coords) {},
+	'swipeRight' : function (coords) {},
+	'swipeDown' : function (coords) {},
+	'drag' : function (coords) {},
+	'pinch' : function (coords) {},
+	'twist' : function (coords) {},
+	'doubleTap' : function (coords) {}
 });
 ```
 
@@ -42,7 +43,7 @@ This function tries to unify mouse and touch interaction across desktop, Android
 
 **threshold : {integer}** - Gestures shorter than this are ignored.
 
-**increments : {float}** - Zoom factor increments applied to the mouse wheel.
+**increments : {float}** - Attenuation applied to the mouse wheel.
 
 **cancelTouch : {boolean}** - Cancels the default browser behaviour for the touch interaction.
 
@@ -62,6 +63,8 @@ This function tries to unify mouse and touch interaction across desktop, Android
 
 **twist : {function}** - A function that runs every time a twisting motion is in progress.
 
+**doubleTap : {function}** - A function that runs when the same location is tapped twice in quick succession.
+
 **x : {integer}** - The x coordinate of the start or centre of the interaction.
 
 **y : {integer}** - The y coordinate of the start or centre of the interaction.
@@ -77,6 +80,8 @@ This function tries to unify mouse and touch interaction across desktop, Android
 **event : {event}** - The event that resulted from the interaction.
 
 **source : {object}** - The original source element of the interaction.
+
+**coords : {x, y, scale, distance, horizontal, vertical, event, source}** - Output object of the gesture events.
 
 ## How to control the script
 
