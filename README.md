@@ -23,7 +23,8 @@ To enable the use of HTML5 tags in Internet Explorer 8 and lower, include *html5
 ## How to start the script
 
 ```javascript
-var gesturesTest = new useful.Gestures( document.getElementById('gestures-test'), {
+var gesturesTest = new useful.Gestures().init({
+	'element' : document.getElementById('gestures-test'),
 	'threshold' : 50,
 	'increment' : 0.1,
 	'cancelTouch' : true,

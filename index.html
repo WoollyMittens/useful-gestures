@@ -42,7 +42,8 @@
 							<div id="gestures-test">Click and drag, pinch, swipe or touch across this box.<span>obstacle</span></div>
 							<script>
 							//<!--
-								var gesturesTest = new useful.Gestures( document.getElementById('gestures-test'), {
+								var gesturesTest = new useful.Gestures().init({
+									'element' : document.getElementById('gestures-test'),
 									'threshold' : 50,
 									'filter' : 1,
 									'increment' : 0.1,
