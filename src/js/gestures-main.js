@@ -1,21 +1,8 @@
-/*
-	Source:
-	van Creij, Maurice (2014). "useful.gestures.js: A library of useful functions to ease working with touch and gestures.", version 20141127, http://www.woollymittens.nl/.
-
-	License:
-	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// create the constructor if needed
-var useful = useful || {};
-useful.Gestures = useful.Gestures || function () {};
-
-// extend the constructor
-useful.Gestures.prototype.Main = function (config, context) {
+// extend the class
+Gestures.prototype.Main = function (config, context) {
 
 	// PROPERTIES
 
-	"use strict";
 	this.config = config;
 	this.context = context;
 	this.element = config.element;
@@ -27,11 +14,9 @@ useful.Gestures.prototype.Main = function (config, context) {
 		// check the configuration properties
 		this.config = this.checkConfig(config);
 		// add the single touch events
-		if (config.allowSingle) { this.single = new this.context.Single(this).init(); }
+		if (config.allowSingle) { this.single = new this.context.Single(this); }
 		// add the multi touch events
-		if (config.allowMulti) { this.multi = new this.context.Multi(this).init(); }
-		// return the object
-		return this;
+		if (config.allowMulti) { this.multi = new this.context.Multi(this); }
 	};
 
 	this.checkConfig = function (config) {
@@ -110,9 +95,8 @@ useful.Gestures.prototype.Main = function (config, context) {
 		this.config.cancelGesture = true;
 	};
 
-};
+	// EVENTS
 
-// return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Gestures.Main;
-}
+	this.init();
+
+};

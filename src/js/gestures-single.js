@@ -1,21 +1,8 @@
-/*
-	Source:
-	van Creij, Maurice (2014). "useful.gestures.js: A library of useful functions to ease working with touch and gestures.", version 20141127, http://www.woollymittens.nl/.
-
-	License:
-	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// create the constructor if needed
-var useful = useful || {};
-useful.Gestures = useful.Gestures || function () {};
-
-// extend the constructor
-useful.Gestures.prototype.Single = function (parent) {
+// extend the class
+Gestures.prototype.Single = function (parent) {
 
 	// PROPERTIES
 
-	"use strict";
 	this.parent = parent;
 	this.config = parent.config;
 	this.element = parent.config.element;
@@ -37,8 +24,6 @@ useful.Gestures.prototype.Single = function (parent) {
 		this.element.addEventListener('mspointerdown', this.onStartTouch());
 		this.element.addEventListener('mspointermove', this.onChangeTouch());
 		document.body.addEventListener('mspointerup', this.onEndTouch());
-		// return the object
-		return this;
 	};
 
 	this.cancelTouch = function (event) {
@@ -182,9 +167,8 @@ useful.Gestures.prototype.Single = function (parent) {
 		};
 	};
 
-};
+	// EVENTS
 
-// return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Gestures.Single;
-}
+	this.init();
+
+};

@@ -1,4 +1,4 @@
-# useful.gestures.js: Interactions Library
+# gestures.js: Interactions Library
 
 A library of useful functions to ease working with touch and gestures.
 
@@ -12,18 +12,10 @@ This include can be added to the header or placed inline before the script is in
 <script src="./js/useful-gestures.js"></script>
 ```
 
-To enable the use of HTML5 tags in Internet Explorer 8 and lower, include *html5.js*.
-
-```html
-<!--[if lte IE 9]>
-	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
-```
-
 ## How to start the script
 
 ```javascript
-var gesturesTest = new useful.Gestures().init({
+var gesturesTest = new Gestures({
 	'element' : document.getElementById('gestures-test'),
 	'threshold' : 50,
 	'increment' : 0.1,
