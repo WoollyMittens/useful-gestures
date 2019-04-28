@@ -9,7 +9,23 @@ Try the <a href="http://www.woollymittens.nl/default.php?url=useful-gestures">te
 This include can be added to the header or placed inline before the script is invoked.
 
 ```html
-<script src="./js/useful-gestures.js"></script>
+<script src="js/gestures.js"></script>
+```
+
+Or use [Require.js](https://requirejs.org/).
+
+```js
+requirejs([
+	'js/gestures.js'
+], function(WaitForIt, ImageFallback) {
+	...
+});
+```
+
+Or import into an MVC framework.
+
+```js
+var Gestures = require('js/gestures.js');
 ```
 
 ## How to start the script

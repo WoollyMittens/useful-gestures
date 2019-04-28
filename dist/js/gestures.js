@@ -42,9 +42,8 @@ var Gestures = function (config) {
 };
 
 // return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = Gestures;
-}
+if (typeof define != 'undefined') define([], function () { return Gestures });
+if (typeof module != 'undefined') module.exports = Gestures;
 
 // extend the class
 Gestures.prototype.Main = function (config, context) {
