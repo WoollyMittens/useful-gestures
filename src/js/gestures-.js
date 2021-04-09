@@ -40,7 +40,3 @@ var Gestures = function (config) {
 	return (config.elements) ? this.each(config) : this.only(config);
 
 };
-
-// return as a require.js module
-if (typeof define != 'undefined') define([], function () { return Gestures });
-if (typeof module != 'undefined') module.exports = Gestures;
